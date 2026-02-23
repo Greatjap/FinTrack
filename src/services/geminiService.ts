@@ -1,18 +1,21 @@
 import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 
 const getApiKey = () => {
-  // Try Vite environment variable first (standard for Vercel/Vite)
+  // Try Next.js public environment variable first
+  const nextKey = typeof process !== 'undefined' ? process.env?.NEXT_PUBLIC_GEMINI_API_KEY : undefined;
+  if (nextKey) return nextKey;
+
+  // Try Vite environment variable
   // @ts-ignore
   const viteKey = import.meta.env?.VITE_GEMINI_API_KEY;
   if (viteKey) return viteKey;
   
   // Fallback to process.env.GEMINI_API_KEY
-  // Vite's define will replace this literal string if configured
   try {
     const processKey = process.env.GEMINI_API_KEY;
     if (processKey) return processKey;
   } catch (e) {
-    // process might not be defined in some environments
+    // process might not be defined
   }
 
   return "";
