@@ -1,4 +1,7 @@
-"use client";
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 import { useState, useEffect } from 'react';
 import { 
@@ -17,7 +20,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Markdown from 'react-markdown';
-import { fetchFinanceNews, fetchOnlyNews, NewsItem, Indicator } from '@/src/services/geminiService';
+import { fetchFinanceNews, fetchOnlyNews, NewsItem, Indicator } from './services/geminiService';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -25,7 +28,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export default function Home() {
+export default function App() {
   const [query, setQuery] = useState('');
   const [news, setNews] = useState<NewsItem[]>([]);
   const [indicators, setIndicators] = useState<Indicator[]>([]);
