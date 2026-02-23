@@ -1,6 +1,18 @@
 import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const getApiKey = () => {
+  // Try Vite environment variable first (standard for Vercel/Vite)
+  const viteKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+  if (viteKey) return viteKey;
+  
+  // Fallback to process.env (standard for AI Studio/Node)
+  const processKey = typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : undefined;
+  if (processKey) return processKey;
+
+  return "";
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
 export interface Indicator {
   institution: string;
