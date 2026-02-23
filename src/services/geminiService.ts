@@ -2,17 +2,34 @@ import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 
 const getApiKey = () => {
   // Try Vite environment variable first (standard for Vercel/Vite)
-  const viteKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+  // @ts-ignore
+  const viteKey = import.meta.env?.VITE_GEMINI_API_KEY;
   if (viteKey) return viteKey;
   
-  // Fallback to process.env (standard for AI Studio/Node)
-  const processKey = typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : undefined;
-  if (processKey) return processKey;
+  // Fallback to process.env.GEMINI_API_KEY
+  // Vite's define will replace this literal string if configured
+  try {
+    const processKey = process.env.GEMINI_API_KEY;
+    if (processKey) return processKey;
+  } catch (e) {
+    // process might not be defined in some environments
+  }
 
   return "";
 };
 
-const ai = new GoogleGenAI({ apiKey: getApiKey() });
+let aiInstance: GoogleGenAI | null = null;
+
+const getAI = () => {
+  if (!aiInstance) {
+    const key = getApiKey();
+    if (!key) {
+      throw new Error("API key must be set when using the Gemini API.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey: key });
+  }
+  return aiInstance;
+};
 
 export interface Indicator {
   institution: string;
@@ -61,7 +78,7 @@ export async function fetchOnlyNews(query: string): Promise<NewsItem[]> {
   `;
 
   try {
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: model,
       contents: prompt,
       config: {
@@ -133,7 +150,7 @@ export async function fetchFinanceNews(query: string = "notícias sobre crédito
   `;
 
   try {
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: model,
       contents: prompt,
       config: {
