@@ -1,38 +1,6 @@
 import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 
-const getApiKey = () => {
-  // Try Next.js public environment variable first
-  const nextKey = typeof process !== 'undefined' ? process.env?.NEXT_PUBLIC_GEMINI_API_KEY : undefined;
-  if (nextKey) return nextKey;
-
-  // Try Vite environment variable
-  // @ts-ignore
-  const viteKey = import.meta.env?.VITE_GEMINI_API_KEY;
-  if (viteKey) return viteKey;
-  
-  // Fallback to process.env.GEMINI_API_KEY
-  try {
-    const processKey = process.env.GEMINI_API_KEY;
-    if (processKey) return processKey;
-  } catch (e) {
-    // process might not be defined
-  }
-
-  return "";
-};
-
-let aiInstance: GoogleGenAI | null = null;
-
-const getAI = () => {
-  if (!aiInstance) {
-    const key = getApiKey();
-    if (!key) {
-      throw new Error("API key must be set when using the Gemini API.");
-    }
-    aiInstance = new GoogleGenAI({ apiKey: key });
-  }
-  return aiInstance;
-};
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 export interface Indicator {
   institution: string;
@@ -81,7 +49,7 @@ export async function fetchOnlyNews(query: string): Promise<NewsItem[]> {
   `;
 
   try {
-    const response = await getAI().models.generateContent({
+    const response = await ai.models.generateContent({
       model: model,
       contents: prompt,
       config: {
@@ -153,7 +121,7 @@ export async function fetchFinanceNews(query: string = "notícias sobre crédito
   `;
 
   try {
-    const response = await getAI().models.generateContent({
+    const response = await ai.models.generateContent({
       model: model,
       contents: prompt,
       config: {

@@ -1,4 +1,7 @@
-'use client';
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 import { useState, useEffect } from 'react';
 import { 
@@ -9,7 +12,7 @@ import {
   RefreshCw, 
   ShieldCheck, 
   Building2, 
-  RefreshCcw,
+  ArrowRight,
   Loader2,
   AlertCircle,
   TrendingDown,
@@ -17,7 +20,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Markdown from 'react-markdown';
-import { fetchFinanceNews, fetchOnlyNews, NewsItem, Indicator } from '@/src/services/geminiService';
+import { fetchFinanceNews, fetchOnlyNews, NewsItem, Indicator } from './services/geminiService';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -35,7 +38,6 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [cache, setCache] = useState<Record<string, NewsItem[]>>({});
-  const [isApiKeyMissing, setIsApiKeyMissing] = useState(false);
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -85,10 +87,6 @@ export default function App() {
   };
 
   useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : undefined);
-    if (!apiKey) {
-      setIsApiKeyMissing(true);
-    }
     handleSearch();
   }, []);
 
@@ -102,16 +100,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-[#1A1A1A] selection:bg-emerald-100">
-      {isApiKeyMissing && (
-        <div className="bg-amber-50 border-b border-amber-200 px-6 py-2 text-center">
-          <p className="text-xs text-amber-800 flex items-center justify-center gap-2">
-            <span className="font-bold">⚠️ Chave API não encontrada:</span> 
-            Para funcionar no Vercel, adicione a variável <code className="bg-amber-100 px-1 rounded">NEXT_PUBLIC_GEMINI_API_KEY</code> nas configurações do projeto.
-          </p>
-        </div>
-      )}
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-black/5 px-6 py-4">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-bottom border-black/5 px-6 py-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
